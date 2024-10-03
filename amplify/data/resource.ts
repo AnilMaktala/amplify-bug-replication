@@ -19,18 +19,7 @@ const schema = a.schema({
     .returns(a.ref("EchoResponse"))
     .authorization((allow) => [allow.authenticated()])
     .handler(a.handler.function(echoHandler)),
-  Measures: a.customType({
-    ts: a.integer(),
-    on: a.boolean(),
-    standby: a.boolean(),
-    tankPct: a.float(),
-    tankRem: a.float(),
-    bmsPct: a.float(),
-    bmsRem: a.float(),
-    flow: a.float(),
-    outPsi: a.float(),
-    outKpa: a.float(),
-  }),
+
   Todo: a
     .model({
       content: a.string(),
