@@ -25,6 +25,8 @@ const schema = a.schema({
       content: a.string(),
       status: a.boolean(),
     })
+    .secondaryIndexes((index) => [index("content")])
+
     .authorization((allow) => [allow.guest()]),
 });
 
