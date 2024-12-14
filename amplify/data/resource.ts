@@ -2,31 +2,50 @@ import {
   type ClientSchema,
   a,
   defineData,
-  defineFunction,
+  //defineFunction,
 } from "@aws-amplify/backend";
 
-const echoHandler = defineFunction({ entry: "./echo-handler/handler.ts" });
+//const echoHandler = defineFunction({ entry: "./echo-handler/handler.ts" });
 
 const schema = a.schema({
-  EchoResponse: a.customType({
-    content: a.string(),
-    executionDuration: a.float(),
-  }),
-
-  echo: a
-    .query()
-    .arguments({ content: a.string(), status: a.boolean() })
-    .returns(a.ref("EchoResponse"))
-    .authorization((allow) => [allow.authenticated()])
-    .handler(a.handler.function(echoHandler)),
-
-  Todo: a
+  Todo1: a
     .model({
       content: a.string(),
-      status: a.boolean(),
+      done: a.boolean(),
+      priority: a.enum(["low", "medium", "high"]),
     })
-    .secondaryIndexes((index) => [index("content")])
-
+    .authorization((allow) => [allow.guest()]),
+  CarListing: a
+    .model({
+      make: a.string().required(),
+      model: a.string().required(),
+      year: a.integer().required(),
+      price: a.float().required(), // Using float for price as it may include decimals
+      mileage: a.float().required(), // Using float for mileage to handle decimal values
+      location: a.string().required(),
+      image: a.string(), // Optional image URL
+      fuelType: a.enum([
+        "GASOLINE",
+        "DIESEL",
+        "ELECTRIC",
+        "HYBRID",
+        "PLUGIN_HYBRID",
+        "OTHER",
+      ]), // Using enum without .required() as per rules
+      transmission: a.enum(["AUTOMATIC", "MANUAL", "CVT", "SEMI_AUTOMATIC"]), // Using enum without .required() as per rules
+      bodyType: a.enum([
+        "SEDAN",
+        "SUV",
+        "COUPE",
+        "TRUCK",
+        "VAN",
+        "WAGON",
+        "CONVERTIBLE",
+        "OTHER",
+      ]), // Using enum without .required() as per rules
+      exteriorColor: a.string().required(),
+      vin: a.string().required(),
+    })
     .authorization((allow) => [allow.guest()]),
 });
 
@@ -35,6 +54,9 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "iam",
+    defaultAuthorizationMode: "identityPool",
+    apiKeyAuthorizationMode: {
+      expiresInDays: 30,
+    },
   },
 });

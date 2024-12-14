@@ -8,13 +8,42 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
+    // client.models.Todo.observeQuery().subscribe({
+    //   next: (data) => setTodos([...data.items]),
+    // });
+    const fetchListings = async () => {
+     // setIsLoading(true);
+      try {
+        let filter = {};
+        if (query) {
+          filter = {
+            or: [
+              { make: { contains: query } },
+              { model: { contains: query } },
+              { year: { eq: parseInt(query) || 0 } },
+            ],
+          };
+        }
+
+        const { data: cars, errors } = await client.models.CarListing.list({
+          filter: filter,
+          limit: 100, // Adjust this value based on your needs
+        });
+        console.log(errors);
+        console.log(cars);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
+        // Handle error (e.g., show error message to user)
+      } finally {
+        //setIsLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, [query]);
 
   function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+   // client.models.Todo.create({ content: window.prompt("Todo content") });
   }
 
   return (
